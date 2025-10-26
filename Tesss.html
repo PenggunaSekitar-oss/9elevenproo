@@ -1,0 +1,1682 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dressing Room by 9ELEVENPRO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa; 
+            color: #172b4d;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 12px -4px rgb(0 0 0 / 0.05);
+            border: 1px solid #e9ecef;
+        }
+        .upload-box {
+            border: 2px dashed #dfe1e6;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            position: relative;
+            overflow: hidden;
+            background-color: #fafbfd; 
+        }
+        .upload-box:hover {
+            border-color: #4c6ef5;
+            background-color: #f7f9ff;
+        }
+        .upload-box .preview-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            z-index: 10;
+        }
+        .placeholder-text {
+            color: #6b778c;
+            text-align: center;
+            padding: 1rem;
+            z-index: 5;
+        }
+        .upload-box.model-box {
+            aspect-ratio: 4 / 5;
+        }
+        .upload-box.product-box {
+            aspect-ratio: 1 / 1;
+        }
+        .status-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(2px);
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .main-btn {
+            background-color: #4c6ef5;
+            color: white;
+            font-weight: 600;
+            padding: 0.875rem 1.5rem;
+            border-radius: 0.5rem;
+            width: 100%;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        }
+        .main-btn:hover:not(:disabled) {
+            background-color: #3b5bdb;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .main-btn:disabled {
+            background-color: #dfe1e6;
+            color: #a5adba;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .secondary-btn {
+            background-color: #ffffff;
+            color: #42526e;
+            border: 1px solid #dfe1e6;
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        }
+        .secondary-btn:hover:not(:disabled) {
+            background-color: #f8f9fa;
+        }
+        #result-container {
+            aspect-ratio: 4 / 5; /* Rasio default dan tetap */
+            border-radius: 0.75rem;
+            overflow: hidden;
+            background-color: #e9ecef;
+            transition: aspect-ratio 0.3s ease-in-out; 
+        }
+        .loader-overlay {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(4px);
+        }
+        textarea, .id-input, select {
+            resize: none;
+            border-radius: 0.5rem;
+            border: 1px solid #dfe1e6;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            font-size: 0.9rem;
+            background-color: #ffffff;
+            transition: all 0.2s ease;
+            cursor: pointer; 
+        }
+        textarea:focus, .id-input:focus, select:focus {
+            outline: none;
+            border-color: #4c6ef5;
+            background-color: #fff;
+            box-shadow: 0 0 0 2px rgba(76, 110, 245, 0.2);
+            ring: 2;
+            ring-color: #4c6ef5;
+        }
+        textarea.centered-placeholder::placeholder {
+            text-align: center;
+            padding-top: 0.75rem; 
+        }
+
+        .id-input {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8rem;
+            text-align: center;
+            margin-top: 0.5rem;
+            color: #172b4d;
+            font-weight: 500;
+        }
+        .remove-image-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background-color: rgba(0, 0, 0, 0.4);
+            border-radius: 50%;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 30;
+            color: #ffffff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .remove-image-btn:hover {
+            background-color: rgba(199, 0, 0, 0.7);
+        }
+        .brand-text {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            background: linear-gradient(135deg, #FFD700, #FFA500, #FFD700); /* Gold gradient */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .innovative-loader {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 60px; 
+        }
+        .innovative-loader .bar {
+            background-color: #4c6ef5; 
+            width: 12px;
+            height: 50px;
+            margin: 0 4px;
+            border-radius: 4px;
+            animation: pulse 1.2s infinite ease-in-out;
+        }
+        .innovative-loader .bar:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+        .innovative-loader .bar:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+        .innovative-loader .bar:nth-child(4) {
+            animation-delay: 0.3s;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scaleY(0.4);
+                opacity: 0.5;
+            }
+            50% {
+                transform: scaleY(1.0);
+                opacity: 1;
+            }
+        }
+
+        .selection-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 0.75rem;
+            background-color: #ffffff;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .selection-card:hover {
+            border-color: #ced4da;
+        }
+        .selection-card.selected {
+            border-color: #4c6ef5;
+            background-color: #f7f9ff;
+            box-shadow: 0 0 0 2px rgba(76, 110, 245, 0.2);
+        }
+        .selection-card .checkmark {
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 50%;
+            border: 2px solid #ced4da;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0; /* Mencegah checkmark menyusut */
+        }
+        .selection-card.selected .checkmark {
+            background-color: #4c6ef5;
+            border-color: #4c6ef5;
+        }
+        .selection-card.selected .checkmark svg {
+            display: block;
+        }
+        
+        /* Modal Style */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(17, 43, 77, 0.6); /* #112b4d with 60% opacity */
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        .modal-content {
+            background-color: #ffffff;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        #edit-canvas-container { /* Ini adalah viewport */
+            border: 1px solid #dfe1e6;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            position: relative;
+            background-color: #f8f9fa;
+        }
+        #edit-canvas-transform-container { /* Wrapper untuk zoom/pan */
+            width: 100%;
+            height: auto;
+            transition: transform 0.1s linear;
+            transform-origin: 0 0; /* Penting untuk kalkulasi zoom/pan */
+        }
+        #edit-canvas {
+            width: 100%;
+            height: auto;
+            display: block;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: -webkit-crisp-edges;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+        #edit-canvas.pan-mode {
+            cursor: move; /* Kursor 'move' saat mode pan */
+        }
+        #edit-canvas.draw-mode {
+            cursor: crosshair; /* Kursor 'crosshair' saat mode gambar */
+        }
+        
+        .brush-size-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #dfe1e6;
+            border-radius: 5px;
+            outline: none;
+            opacity: 0.7;
+            transition: opacity .2s;
+        }
+        .brush-size-slider:hover {
+            opacity: 1;
+        }
+        .brush-size-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #4c6ef5;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .brush-size-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #4c6ef5;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .zoom-btn {
+            background-color: #ffffff;
+            border: 1px solid #dfe1e6;
+            color: #42526e;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 1.25rem;
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        }
+        .zoom-btn:hover {
+            background-color: #f8f9fa;
+        }
+        .zoom-btn:disabled {
+            color: #a5adba;
+            cursor: not-allowed;
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="min-h-screen container mx-auto px-4 py-8">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl lg:text-5xl font-bold text-gray-800 font-poppins">Dressing Room</h1>
+            <div class="inline-block bg-black px-4 py-2 rounded-lg mt-2">
+                <p class="text-xl brand-text font-poppins">by 9ELEVENPRO</p>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+            
+            <!-- Panel Input -->
+            <div class="card space-y-6">
+                
+                <!-- UNGGAH MODEL -->
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-900 mb-2 font-poppins">1. Unggah Foto Model <span class="text-red-500">*</span></h2>
+                    <input type="file" id="model-upload" class="hidden" accept="image/*">
+                    <div id="model-box" class="upload-box model-box">
+                        <div class="placeholder-text">
+                            <svg class="mx-auto h-12 w-12" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+                            <span class="mt-2 block font-semibold font-poppins">Foto model referensi</span>
+                        </div>
+                        <img id="model-preview" class="preview-image hidden" alt="Pratinjau Model">
+                        <button id="model-remove-btn" class="remove-image-btn hidden" title="Ganti Gambar">
+                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- JENIS ANGLE -->
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-900 mb-2 font-poppins">2. Pilih Jenis Angle <span class="font-normal text-gray-500">(Opsional)</span></h2>
+                    <div id="angle-list-container" class="max-h-60 overflow-y-auto space-y-2 pr-2">
+                        <!-- Kartu angle akan di-generate oleh JavaScript di sini -->
+                    </div>
+                </div>
+                
+                <!-- GAYA POSE -->
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-900 mb-2 font-poppins">3. Pilih Gaya Pose <span class="font-normal text-gray-500">(Opsional)</span></h2>
+                    <div id="pose-list-container" class="max-h-60 overflow-y-auto space-y-2 pr-2">
+                        <!-- Kartu pose akan di-generate oleh JavaScript di sini -->
+                    </div>
+                </div>
+
+
+                <!-- UNGGAH PRODUK -->
+                <div>
+                     <h2 class="text-lg font-semibold text-gray-900 mb-2 font-poppins">4. Unggah Foto Produk (Min. 1) <span class="text-red-500">*</span></h2>
+                     <div class="grid grid-cols-3 gap-3">
+                        <!-- Produk 1 -->
+                        <div>
+                            <input type="file" id="product1-upload" class="hidden" accept="image/*">
+                            <div id="product1-box" class="upload-box product-box">
+                                <div class="placeholder-text">
+                                    <svg class="mx-auto h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                                </div>
+                                <img id="product1-preview" class="preview-image hidden" alt="Pratinjau Produk 1">
+                                <div id="product1-loader" class="status-overlay hidden">
+                                    <svg class="w-6 h-6 text-indigo-600 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                </div>
+                                <div id="product1-success" class="status-overlay hidden" style="color: #22c55e;">
+                                    <svg class="w-10 h-10" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                </div>
+                                <button id="product1-remove-btn" class="remove-image-btn hidden" title="Ganti Gambar">
+                                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                                </button>
+                            </div>
+                            <input type="text" id="product1-id-input" class="id-input font-poppins" placeholder="Identifikasi AI..." title="Hasil identifikasi AI (bisa diedit)">
+                        </div>
+                        <!-- Produk 2 -->
+                        <div>
+                            <input type="file" id="product2-upload" class="hidden" accept="image/*">
+                            <div id="product2-box" class="upload-box product-box">
+                                <div class="placeholder-text">
+                                    <svg class="mx-auto h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                                </div>
+                                <img id="product2-preview" class="preview-image hidden" alt="Pratinjau Produk 2">
+                                <div id="product2-loader" class="status-overlay hidden">
+                                    <svg class="w-6 h-6 text-indigo-600 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                </div>
+                                <div id="product2-success" class="status-overlay hidden" style="color: #22c55e;">
+                                    <svg class="w-10 h-10" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                </div>
+                                <button id="product2-remove-btn" class="remove-image-btn hidden" title="Ganti Gambar">
+                                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                                </button>
+                            </div>
+                            <input type="text" id="product2-id-input" class="id-input font-poppins" placeholder="Identifikasi AI..." title="Hasil identifikasi AI (bisa diedit)">
+                        </div>
+                        <!-- Produk 3 -->
+                        <div>
+                            <input type="file" id="product3-upload" class="hidden" accept="image/*">
+                            <div id="product3-box" class="upload-box product-box">
+                                <div class="placeholder-text">
+                                    <svg class="mx-auto h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                                </div>
+                                <img id="product3-preview" class="preview-image hidden" alt="Pratinjau Produk 3">
+                                <div id="product3-loader" class="status-overlay hidden">
+                                    <svg class="w-6 h-6 text-indigo-600 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                </div>
+                                <div id="product3-success" class="status-overlay hidden" style="color: #22c55e;">
+                                    <svg class="w-10 h-10" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                </div>
+                                <button id="product3-remove-btn" class="remove-image-btn hidden" title="Ganti Gambar">
+                                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                                </button>
+                            </div>
+                            <input type="text" id="product3-id-input" class="id-input font-poppins" placeholder="Identifikasi AI..." title="Hasil identifikasi AI (bisa diedit)">
+                        </div>
+                     </div>
+                </div>
+
+                <!-- INSTRUKSI TAMBAHAN -->
+                <div>
+                     <h2 class="text-lg font-semibold text-gray-900 mb-2 font-poppins">5. Tuliskan Instruksi Tambahan <span class="font-normal text-gray-500">(Opsional)</span></h2>
+                     <textarea id="prompt-input" rows="3" class="font-poppins centered-placeholder" placeholder="Contoh: Pencahayaan lebih hangat, kalung emas."></textarea>
+                     <div class="mt-2">
+                        <button id="recommend-btn" class="main-btn secondary-btn !w-auto !text-sm !py-2 px-3 font-poppins" disabled>
+                            ✨ Dapatkan Rekomendasi Gaya
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TOMBOL AKSI -->
+                <div class="pt-2 flex flex-col gap-3">
+                    <button id="generate-btn" class="main-btn font-poppins" disabled>
+                        Proses dengan AI
+                    </button>
+                    <button id="reset-btn" class="main-btn secondary-btn font-poppins">
+                        Reset Semua
+                    </button>
+                </div>
+            </div>
+
+            
+            <!-- Panel Hasil -->
+            <div class="card">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold text-gray-800 font-poppins">Hasil Akhir</h2>
+                </div>
+                <!-- ID result-container sekarang dikontrol oleh JS -->
+                <div id="result-container" class="relative flex items-center justify-center">
+                    <div id="output-placeholder" class="placeholder-text">
+                        <svg class="mx-auto h-16 w-16 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>
+                        <p class="mt-4 font-medium font-poppins">Gambar buatan AI akan muncul di sini.</p>
+                    </div>
+                    <div id="loader" class="absolute inset-0 loader-overlay items-center justify-center flex-col gap-4 hidden">
+                         <div class="innovative-loader">
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                        </div>
+                        <p id="loader-text" class="text-lg font-semibold text-indigo-700 font-poppins text-center">9elevenpro sedang bekerja keras</p> 
+                    </div>
+                    <img id="result-image" class="w-full h-full object-cover hidden" alt="Hasil Virtual Try-On oleh AI">
+                </div>
+                <!-- Tombol Aksi Hasil -->
+                <div class="grid grid-cols-2 gap-3 mt-4">
+                    <button id="download-btn" class="main-btn hidden font-poppins" disabled>
+                        <svg class="w-5 h-5 inline-block mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
+                        Download
+                    </button>
+                    <button id="edit-btn" class="main-btn secondary-btn hidden font-poppins">
+                        <svg class="w-5 h-5 inline-block mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>
+                        Edit Cepat
+                    </button>
+                </div>
+                <button id="regenerate-btn" class="main-btn secondary-btn mt-3 hidden font-poppins">
+                    <svg class="w-5 h-5 inline-block mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.992 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.992v4.992h-4.992" /></svg>
+                    Generate Ulang
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Edit Cepat / Inpainting -->
+    <div id="edit-modal" class="modal-overlay">
+        <div class="modal-content" id="modal-content-box">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-gray-800 font-poppins">Edit Cepat (Inpainting)</h3>
+                <button id="cancel-edit-btn" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <p class="text-sm text-gray-600 font-poppins">Arsir/gambar di area yang ingin Anda perbaiki, lalu tulis instruksi di bawah.</p>
+                
+                <!-- Kontrol Zoom dan Pan -->
+                <div class="flex items-center gap-3 bg-gray-50 p-2 rounded-lg">
+                    <button id="zoom-out-btn" class="zoom-btn">-</button>
+                    <span id="zoom-level-label" class="flex-1 text-center font-semibold text-gray-700 font-poppins text-sm">100%</span>
+                    <button id="zoom-in-btn" class="zoom-btn">+</button>
+                    <button id="toggle-pan-btn" class="main-btn secondary-btn !w-auto !text-sm !py-2 px-3 font-poppins flex-shrink-0">
+                        Mode Gambar
+                    </button>
+                </div>
+
+                <!-- Viewport Canvas -->
+                <div id="edit-canvas-container">
+                    <div id="edit-canvas-transform-container">
+                        <canvas id="edit-canvas" class="draw-mode"></canvas>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label for="brush-size" class="text-sm font-medium text-gray-700 font-poppins">Ukuran Kuas: <span id="brush-size-label">40</span>px</label>
+                    <input type="range" id="brush-size" min="10" max="100" value="40" class="brush-size-slider">
+                </div>
+
+                <button id="clear-mask-btn" class="main-btn secondary-btn !w-auto !text-sm !py-2 px-3 font-poppins">
+                    Hapus Arsiran
+                </button>
+
+                <!-- Unggah Produk di Modal -->
+                <div>
+                    <label class="text-sm font-medium text-gray-700 font-poppins">Unggah Produk untuk Dimasukkan (Opsional):</label>
+                    <p class="text-xs text-gray-500 font-poppins mb-2">Jika diisi, AI akan menempatkan produk ini di area arsiran Anda.</p>
+                    <input type="file" id="edit-product-upload" class="hidden" accept="image/*">
+                    <div id="edit-product-box" class="upload-box product-box w-1/2 mx-auto mt-2">
+                        <div class="placeholder-text !text-xs !p-2">
+                            <svg class="mx-auto h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                            <span class="mt-1 block font-semibold font-poppins">Unggah Produk</span>
+                        </div>
+                        <img id="edit-product-preview" class="preview-image hidden" alt="Pratinjau Produk Edit">
+                        <button id="edit-product-remove-btn" class="remove-image-btn hidden !top-1 !right-1 !w-6 !h-6" title="Hapus Produk">
+                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="edit-prompt-input" class="text-sm font-medium text-gray-700 font-poppins">Instruksi Edit:</label>
+                    <textarea id="edit-prompt-input" rows="2" class="font-poppins mt-1" placeholder="Contoh: perbaiki lengan baju INI, ATAU pakaikan kalung INI di leher"></textarea>
+                </div>
+                
+                <div class="relative">
+                    <button id="apply-edit-btn" class="main-btn font-poppins">
+                        Terapkan Edit
+                    </button>
+                    <div id="edit-loader" class="absolute inset-0 loader-overlay items-center justify-center flex-col gap-4 hidden rounded-md">
+                        <svg class="w-8 h-8 text-indigo-600 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const files = { model: null, product1: null, product2: null, product3: null };
+            let currentResultBase64 = null; 
+            let originalEditImage = null; 
+            let editProductFile = null; 
+            
+            const poses = [
+                { id: "", title: "Gunakan Pose Asli Model", desc: "Akan mengikuti pose & potongan tubuh dari foto referensi Anda." },
+                { id: "Standing Straight – berdiri tegak, pandangan tajam.", title: "1. Standing Straight", desc: "Berdiri tegak, pandangan tajam." },
+                { id: "Hand on Hip – satu tangan di pinggul, tubuh miring sedikit.", title: "2. Hand on Hip", desc: "Satu tangan di pinggul, tubuh miring sedikit." },
+                { id: "Crossed Arms – tangan menyilang, ekspresi tegas.", title: "3. Crossed Arms", desc: "Tangan menyilang, ekspresi tegas." },
+                { id: "Over Shoulder – menoleh ke belakang, tatapan menggoda.", title: "4. Over Shoulder", desc: "Menoleh ke belakang, tatapan menggoda." },
+                { id: "Walking Pose – langkah natural, cocok untuk fashion", title: "5. Walking Pose (Full Body)", desc: "Langkah natural, cocok untuk fashion" },
+                { id: "Sitting Casual – duduk santai, bahu rileks.", title: "6. Sitting Casual", desc: "Duduk santai, bahu rileks." },
+            ];
+
+            const angles = [
+                { id: "", title: "Gunakan Angle Asli Model", desc: "Akan mengikuti angle & potongan tubuh dari foto referensi Anda." },
+                { id: "Eye Level", title: "1. Eye Level", desc: "Natural, netral, humanis." },
+                { id: "Low Angle", title: "2. Low Angle", desc: "Kesan kuat, tinggi, berwibawa." },
+                { id: "High Angle", title: "3. High Angle", desc: "Lembut, feminin, atau dramatis." },
+                { id: "Side Angle (¾)", title: "4. Side Angle (¾)", desc: "Menonjolkan bentuk wajah dan tubuh." },
+                { id: "Dutch Angle (miring)", title: "5. Dutch Angle (miring)", desc: "Artistik dan edgy." },
+                { id: "Close-Up", title: "6. Close-Up", desc: "Fokus ekspresi atau makeup." },
+                { id: "Full Body", title: "7. Full Body", desc: "Menunjukkan proporsi dan pakaian." },
+                { id: "Top Shot (bird’s eye)", title: "8. Top Shot (bird’s eye)", desc: "Kesan editorial dan eksperimental." },
+                { id: "Bottom Shot (worm’s eye)", title: "9. Bottom Shot (worm’s eye)", desc: "Memberi efek monumental atau glamor." }
+            ];
+
+            let selectedAngleId = ""; 
+            let selectedPoseId = ""; 
+
+            
+            const ui = {
+                uploads: {
+                    model: document.getElementById('model-upload'),
+                    product1: document.getElementById('product1-upload'),
+                    product2: document.getElementById('product2-upload'),
+                    product3: document.getElementById('product3-upload')
+                },
+                boxes: {
+                    model: document.getElementById('model-box'),
+                    product1: document.getElementById('product1-box'),
+                    product2: document.getElementById('product2-box'),
+                    product3: document.getElementById('product3-box')
+                },
+                previews: {
+                    model: document.getElementById('model-preview'),
+                    product1: document.getElementById('product1-preview'),
+                    product2: document.getElementById('product2-preview'),
+                    product3: document.getElementById('product3-preview')
+                },
+                loaders: { 
+                    product1: document.getElementById('product1-loader'),
+                    product2: document.getElementById('product2-loader'),
+                    product3: document.getElementById('product3-loader')
+                },
+                successIcons: { 
+                    product1: document.getElementById('product1-success'),
+                    product2: document.getElementById('product2-success'),
+                    product3: document.getElementById('product3-success')
+                },
+                idInputs: {
+                    product1: document.getElementById('product1-id-input'),
+                    product2: document.getElementById('product2-id-input'),
+                    product3: document.getElementById('product3-id-input')
+                },
+                removeBtns: { 
+                    model: document.getElementById('model-remove-btn'),
+                    product1: document.getElementById('product1-remove-btn'),
+                    product2: document.getElementById('product2-remove-btn'),
+                    product3: document.getElementById('product3-remove-btn')
+                },
+                
+                angleListContainer: document.getElementById('angle-list-container'), 
+                poseListContainer: document.getElementById('pose-list-container'), 
+                promptInput: document.getElementById('prompt-input'),
+                generateBtn: document.getElementById('generate-btn'),
+                downloadBtn: document.getElementById('download-btn'),
+                regenerateBtn: document.getElementById('regenerate-btn'), 
+                resetBtn: document.getElementById('reset-btn'),
+                recommendBtn: document.getElementById('recommend-btn'),
+                resultContainer: document.getElementById('result-container'), 
+                outputPlaceholder: document.getElementById('output-placeholder'),
+                loader: document.getElementById('loader'),
+                loaderText: document.getElementById('loader-text'), 
+                resultImage: document.getElementById('result-image'),
+                
+                // Elemen Modal Edit
+                editBtn: document.getElementById('edit-btn'),
+                editModal: document.getElementById('edit-modal'),
+                editModalContent: document.getElementById('modal-content-box'), 
+                editCanvas: document.getElementById('edit-canvas'),
+                editCanvasContainer: document.getElementById('edit-canvas-container'), 
+                editCanvasTransformContainer: document.getElementById('edit-canvas-transform-container'),
+                editPromptInput: document.getElementById('edit-prompt-input'),
+                applyEditBtn: document.getElementById('apply-edit-btn'),
+                cancelEditBtn: document.getElementById('cancel-edit-btn'),
+                clearMaskBtn: document.getElementById('clear-mask-btn'),
+                editLoader: document.getElementById('edit-loader'),
+                brushSizeSlider: document.getElementById('brush-size'),
+                brushSizeLabel: document.getElementById('brush-size-label'),
+                zoomInBtn: document.getElementById('zoom-in-btn'),
+                zoomOutBtn: document.getElementById('zoom-out-btn'),
+                zoomLevelLabel: document.getElementById('zoom-level-label'),
+                togglePanBtn: document.getElementById('toggle-pan-btn'),
+
+                editProductUpload: document.getElementById('edit-product-upload'),
+                editProductBox: document.getElementById('edit-product-box'),
+                editProductPreview: document.getElementById('edit-product-preview'),
+                editProductRemoveBtn: document.getElementById('edit-product-remove-btn'),
+            };
+            
+            const editCtx = ui.editCanvas.getContext('2d');
+            let isDrawing = false;
+            let currentBrushSize = 40;
+            
+            let zoomLevel = 1.0;
+            let panX = 0;
+            let panY = 0;
+            let isPanning = false;
+            let lastPanX = 0;
+            let lastPanY = 0;
+            let editMode = 'draw'; 
+
+            
+            const apiKey = ""; 
+
+            const loaderMessages = [
+                "9elevenpro sedang bekerja keras",
+                "Seduh kopi Anda...",
+                "Ini akan segera selesai!",
+                "Menyiapkan hasil terbaik...",
+                "Hampir selesai...",
+                "Sentuhan akhir sedang dilakukan...",
+                "Mencocokkan produk dengan sempurna...",
+                "Sabar sedikit lagi ya..."
+            ];
+            let currentLoaderMessageIndex = 0;
+            let loaderInterval;
+
+            const startLoaderAnimation = () => {
+                currentLoaderMessageIndex = 0;
+                ui.loaderText.textContent = loaderMessages[currentLoaderMessageIndex];
+                if (loaderInterval) clearInterval(loaderInterval); 
+                loaderInterval = setInterval(() => {
+                    currentLoaderMessageIndex = (currentLoaderMessageIndex + 1) % loaderMessages.length;
+                    ui.loaderText.textContent = loaderMessages[currentLoaderMessageIndex];
+                }, 4000); 
+            };
+
+            const stopLoaderAnimation = () => {
+                clearInterval(loaderInterval);
+                loaderInterval = null; 
+                ui.loaderText.textContent = "9elevenpro sedang bekerja keras"; 
+            };
+
+
+            const updateSelectionVisuals = (container, selectedId, datasetKey) => {
+                const cards = container.querySelectorAll('.selection-card');
+                cards.forEach(card => {
+                    const checkmarkIcon = card.querySelector('.checkmark svg');
+                    
+                    if (card.dataset[datasetKey] === selectedId) {
+                        card.classList.add('selected');
+                        if (checkmarkIcon) checkmarkIcon.style.display = 'block';
+                    } else {
+                        card.classList.remove('selected');
+                        if (checkmarkIcon) checkmarkIcon.style.display = 'none';
+                    }
+                });
+            };
+            
+            const initializeSelectionList = (container, items, selectedIdRef, datasetKey, updateCallback) => {
+                container.innerHTML = ''; 
+                items.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'selection-card'; 
+                    card.dataset[datasetKey] = item.id; 
+                    
+                    card.innerHTML = `
+                        <div class="flex-1 pr-4">
+                            <p class="font-semibold text-sm text-gray-800 font-poppins">${item.title}</p>
+                            <p class="font-normal text-xs text-gray-500 font-poppins">${item.desc}</p>
+                        </div>
+                        <div class="checkmark">
+                            <svg class="w-4 h-4 text-white" style="display: none;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                    `;
+                    
+                    card.addEventListener('click', () => {
+                        window[selectedIdRef] = item.id; 
+                        updateSelectionVisuals(container, window[selectedIdRef], datasetKey);
+                        if (updateCallback) updateCallback(item.id); 
+                        checkAllFiles(); 
+                    });
+                    
+                    container.appendChild(card);
+                });
+                
+                updateSelectionVisuals(container, window[selectedIdRef], datasetKey); 
+            };
+
+
+            
+            const checkAllFiles = () => {
+                const hasProduct = !!files.product1 || !!files.product2 || !!files.product3;
+                const hasModelRequirement = !!files.model;
+                ui.generateBtn.disabled = !(hasModelRequirement && hasProduct);
+            };
+
+            const checkRecommendButton = () => {
+                const hasIdentifiedProduct = (ui.idInputs.product1.value && !ui.idInputs.product1.value.includes("...") && !ui.idInputs.product1.value.includes("Gagal")) ||
+                                             (ui.idInputs.product2.value && !ui.idInputs.product2.value.includes("...") && !ui.idInputs.product2.value.includes("Gagal")) ||
+                                             (ui.idInputs.product3.value && !ui.idInputs.product3.value.includes("...") && !ui.idInputs.product3.value.includes("Gagal"));
+                ui.recommendBtn.disabled = !hasIdentifiedProduct;
+            };
+
+            const identifyProduct = async (fileData, type) => {
+                const loader = ui.loaders[type];
+                const input = ui.idInputs[type];
+                const successIcon = ui.successIcons[type];
+                
+                loader.classList.remove('hidden');
+                loader.classList.add('flex');
+                successIcon.classList.add('hidden'); 
+                input.disabled = true;
+                input.value = 'Mengidentifikasi...';
+                checkRecommendButton();
+
+                try {
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+                    const prompt = "Anda adalah ahli fashion. Lihat gambar ini dan sebutkan nama item pakaian ini dalam bahasa Indonesia. Buat singkat dan deskriptif. Contoh: 'Kemeja lengan panjang biru muda', 'Jeans robek hitam', 'Sepatu kets putih'. Hanya kembalikan nama item, tanpa teks lain.";
+                    const payload = {
+                        contents: [{
+                            parts: [
+                                { text: prompt },
+                                { inlineData: { mimeType: fileData.mimeType, data: fileData.base64 } }
+                            ]
+                        }]
+                    };
+                    
+                    let response;
+                    let retries = 0;
+                    const maxRetries = 3;
+                    while (retries < maxRetries) {
+                        try {
+                            response = await fetch(apiUrl, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(payload)
+                            });
+                            if (response.ok) break; 
+                            else if (response.status === 429 || response.status >= 500) throw new Error(`Retryable error: ${response.status}`);
+                            else {
+                                const error = await response.json();
+                                throw new Error(`API Error: ${error.error.message || 'Unknown error'}`);
+                            }
+                        } catch (e) { 
+                            if (retries >= maxRetries - 1) throw e; 
+                            const delay = Math.pow(2, retries) * 1000 + Math.random() * 1000;
+                            await new Promise(resolve => setTimeout(resolve, delay));
+                            retries++;
+                        }
+                    }
+
+                    const result = await response.json();
+                    const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                    if (text) {
+                        input.value = text.trim();
+                        successIcon.classList.remove('hidden'); 
+                        successIcon.classList.add('flex');
+                    } else {
+                        throw new Error("No text response from identification API.");
+                    }
+                } catch (error) {
+                    console.error(`Error identifying ${type}:`, error);
+                    input.value = "Gagal identifikasi";
+                } finally {
+                    loader.classList.add('hidden'); 
+                    loader.classList.remove('flex');
+                    input.disabled = false;
+                    checkRecommendButton();
+                }
+            };
+
+            const handleFileSelect = (event, type) => {
+                const file = event.target.files[0];
+                if (!file || !file.type.startsWith('image/')) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const fileData = {
+                        base64: e.target.result.split(',')[1],
+                        mimeType: file.type
+                    };
+                    files[type] = fileData;
+                    ui.previews[type].src = e.target.result;
+                    ui.previews[type].classList.remove('hidden');
+                    ui.removeBtns[type].classList.remove('hidden');
+                    
+                    if (type.startsWith('product')) {
+                        identifyProduct(fileData, type);
+                    }
+                    
+                    checkAllFiles();
+                };
+                reader.readAsDataURL(file);
+            };
+
+            const removeImage = (type) => { 
+                files[type] = null;
+                ui.previews[type].src = '';
+                ui.previews[type].classList.add('hidden');
+                ui.removeBtns[type].classList.add('hidden');
+                if (type.startsWith('product')) {
+                    ui.idInputs[type].value = '';
+                    ui.idInputs[type].placeholder = 'Identifikasi AI...';
+                    ui.idInputs[type].disabled = false;
+                    ui.successIcons[type].classList.add('hidden'); 
+                    ui.successIcons[type].classList.remove('flex');
+                }
+                checkAllFiles();
+                checkRecommendButton(); 
+            };
+
+            const resetAll = () => { 
+                Object.keys(files).forEach(key => files[key] = null);
+                Object.keys(ui.previews).forEach(key => {
+                    ui.previews[key].src = '';
+                    ui.previews[key].classList.add('hidden');
+                });
+                Object.keys(ui.removeBtns).forEach(key => ui.removeBtns[key].classList.add('hidden'));
+                Object.keys(ui.idInputs).forEach(key => {
+                    ui.idInputs[key].value = '';
+                    ui.idInputs[key].placeholder = 'Identifikasi AI...';
+                    ui.idInputs[key].disabled = false;
+                });
+                Object.keys(ui.successIcons).forEach(key => { 
+                    ui.successIcons[key].classList.add('hidden');
+                    ui.successIcons[key].classList.remove('flex');
+                });
+                
+                selectedAngleId = angles[0].id; 
+                updateSelectionVisuals(ui.angleListContainer, selectedAngleId, 'angleId'); 
+                selectedPoseId = poses[0].id; 
+                updateSelectionVisuals(ui.poseListContainer, selectedPoseId, 'poseId'); 
+                
+                ui.promptInput.value = '';
+                ui.resultImage.src = '';
+                ui.resultImage.classList.add('hidden');
+                ui.outputPlaceholder.classList.remove('hidden');
+                
+                ui.downloadBtn.classList.add('hidden');
+                ui.downloadBtn.disabled = true;
+                ui.regenerateBtn.classList.add('hidden'); 
+                ui.editBtn.classList.add('hidden'); 
+                
+                currentResultBase64 = null;
+                originalEditImage = null;
+
+                checkAllFiles(); 
+                checkRecommendButton(); 
+                showCustomAlert("Semua telah direset.");
+            };
+
+            const getStyleRecommendation = async () => {
+                const productDescriptions = [
+                    ui.idInputs.product1.value,
+                    ui.idInputs.product2.value,
+                    ui.idInputs.product3.value
+                ].filter(v => v && !v.includes("...") && !v.includes("Gagal"));
+
+                if (productDescriptions.length === 0) {
+                    showCustomAlert("Harap tunggu identifikasi produk selesai.");
+                    return;
+                }
+
+                ui.recommendBtn.disabled = true;
+                ui.recommendBtn.textContent = '✨ Sedang berpikir...';
+
+                try {
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+                    
+                    const productList = productDescriptions.join(', ');
+                    const prompt = `Anda adalah seorang fashion stylist profesional untuk brand 9ELEVENPRO. Berikan satu paragraf singkat (2-3 kalimat) rekomendasi gaya untuk OOTD yang terdiri dari: ${productList}. Sarankan juga 1-2 aksesoris atau item pelengkap (seperti sepatu atau tas) untuk menyempurnakan tampilan. Berikan dalam Bahasa Indonesia.`;
+
+                    const payload = {
+                        contents: [{ parts: [{ text: prompt }] }],
+                    };
+                    
+                    let response;
+                    let retries = 0;
+                    const maxRetries = 3;
+                    while (retries < maxRetries) {
+                        try {
+                            response = await fetch(apiUrl, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(payload)
+                            });
+                            if (response.ok) break; 
+                            else if (response.status === 429 || response.status >= 500) throw new Error(`Retryable error: ${response.status}`);
+                            else {
+                                const error = await response.json();
+                                throw new Error(`API Error: ${error.error.message || 'Unknown error'}`);
+                            }
+                        } catch (e) { 
+                            if (retries >= maxRetries - 1) throw e; 
+                            const delay = Math.pow(2, retries) * 1000 + Math.random() * 1000;
+                            await new Promise(resolve => setTimeout(resolve, delay));
+                            retries++;
+                        }
+                    }
+
+                    const result = await response.json();
+                    const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                    if (text) {
+                        ui.promptInput.value = text.trim();
+                    } else {
+                        throw new Error("No text response from recommendation API.");
+                    }
+                } catch (error) {
+                    console.error("Error getting style recommendation:", error);
+                    showCustomAlert("Gagal mendapatkan rekomendasi: " + error.message);
+                } finally {
+                    ui.recommendBtn.disabled = false;
+                    ui.recommendBtn.textContent = '✨ Dapatkan Rekomendasi Gaya';
+                }
+            };
+
+            const generateImageWithAI = async () => {
+                ui.generateBtn.disabled = true;
+                ui.generateBtn.textContent = 'Sedang diproses...';
+                ui.outputPlaceholder.classList.add('hidden');
+                ui.resultImage.classList.add('hidden');
+                ui.downloadBtn.classList.add('hidden'); 
+                ui.downloadBtn.disabled = true;
+                ui.regenerateBtn.classList.add('hidden'); 
+                ui.editBtn.classList.add('hidden'); 
+                ui.loader.classList.remove('hidden');
+                ui.loader.classList.add('flex');
+
+                ui.resultContainer.style.aspectRatio = "4 / 5";
+
+                startLoaderAnimation(); 
+
+                let finalPrompt = ""; 
+
+                try {
+                    const userPrompt = ui.promptInput.value || "Pasangkan produk pada model secara fotorealistis.";
+                    const angleInstruction = selectedAngleId; 
+                    const poseInstruction = selectedPoseId; 
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`;
+                    
+                    let productListPrompt = "";
+                    const parts = [];
+
+                    ['product1', 'product2', 'product3'].forEach((pType, index) => {
+                        if (files[pType]) {
+                            const idText = ui.idInputs[pType].value || `Produk ${index + 1}`;
+                            productListPrompt += `- Produk ${index + 1} (Teridentifikasi sebagai: '${idText}')\n`;
+                            parts.push({ inlineData: { mimeType: files[pType].mimeType, data: files[pType].base64 } });
+                        }
+                    });
+
+                    
+                    const isFullBodyRequest = (angleInstruction && (angleInstruction.includes("Full Body") || angleInstruction.includes("Bottom Shot"))) || 
+                                              (poseInstruction && (poseInstruction.includes("Full Body") || poseInstruction.includes("Walking")));
+
+                    let angleAndCropPrompt = `**4. ANGLE & CROP (KRITIS):** - Gunakan angle/shot asli dari 'Reference Model Image'.
+                           - **Pertahankan framing/potongan tubuh (crop) yang sama persis.** JANGAN membuat sisa tubuh jika gambar referensi terpotong.`;
+                    
+                    if (angleInstruction) {
+                        angleAndCropPrompt = `**4. ANGLE & CROP (HIGH PRIORITY):** - Anda **HARUS** mengabaikan angle/shot asli. Buat ulang model dari angle baru ini: "${angleInstruction}".
+                           - ${isFullBodyRequest ? "Karena ini adalah permintaan 'Full Body'/'Bottom Shot', Anda **HARUS** secara cerdas membuat sisa tubuh model jika gambar referensi terpotong." : "Anda harus mencoba mempertahankan *framing/potongan tubuh* asli (misal: close-up, medium shot) sebisa mungkin saat menerapkan angle baru ini."}`;
+                    }
+
+                    let posePrompt = `**5. POSE (KRITIS):** - Gunakan pose asli dari 'Reference Model Image'. JANGAN UBAH pose.`;
+                    
+                    if (poseInstruction) {
+                        posePrompt = `**5. POSE (HIGH PRIORITY):** - Anda **HARUS** mengabaikan pose asli. Buat ulang model dalam pose baru ini: "${poseInstruction}".
+                           - ${isFullBodyRequest ? "Karena ini adalah permintaan 'Full Body'/'Walking', Anda **HARUS** secara cerdas membuat sisa tubuh model jika gambar referensi terpotong." : "Pertahankan *framing/potongan tubuh* asli sebisa mungkin saat menerapkan pose baru ini."}`;
+                    } else if (isFullBodyRequest && !poseInstruction) {
+                        posePrompt = `**5. POSE (KRITIS):** - Gunakan pose asli dari 'Reference Model Image'.
+                           - **PENTING:** Karena Angle meminta 'Full Body', Anda diperbolehkan membuat sisa tubuh untuk melengkapi pose asli."`;
+                    }
+                    
+                    let backgroundPrompt = `**6. BACKGROUND (KRITIS):** Anda **HARUS** mempertahankan background asli dari 'Reference Model Image' tanpa perubahan atau blur. JANGAN ubah background.`;
+
+
+                    finalPrompt = `
+                        Anda adalah AI stylist profesional untuk 9ELEVENPRO.
+                        Tugas Anda adalah membuat visualisasi fotorealistis dari produk pengguna yang dikenakan oleh model referensi.
+
+                        **USER'S REQUEST:** "${userPrompt}"
+                        **REFERENCE MODEL IMAGE:** [Model Image akan dilampirkan]
+                        **PRODUCTS TO USE:**
+                        ${productListPrompt}
+                        [Product Images akan dilampirkan]
+
+                        ---
+                        **CORE INSTRUCTIONS (HARUS DIIKUTI DENGAN KETAT):**
+
+                        **1. PENGGANTIAN PAKAIAN (SANGAT KRITIS):**
+                           - Tugas utama Anda adalah **MENGHAPUS SEMUA** pakaian yang dikenakan model di 'Reference Model Image' (termasuk atasan, bawahan, jaket, kardigan, dll.) dan **MENGGANTINYA** dengan 'Products To Use' yang baru.
+                           - **JANGAN TUMPUK** atau lapisi produk baru di atas pakaian lama. Pakaian lama model HARUS hilang seluruhnya.
+                           - Model harus terlihat seolah-olah produk baru adalah pakaian asli yang dikenakannya.
+                        
+                        **2. OUTFIT COMPLETION (PENTING):**
+                           - Jika hanya atasan (seperti kemeja) yang diberikan sebagai produk, Anda **HARUS** secara cerdas membuat bawahan yang serasi (seperti celana atau rok) untuk melengkapi pakaian, memastikan model berpakaian lengkap dan sopan.
+                           - Lakukan hal yang sama untuk item yang hilang lainnya (misalnya, jika hanya bawahan yang diberikan, buat atasan yang serasi).
+
+                        **3. MODEL IDENTITY (SANGAT KRITIS):** - Anda HARUS mempertahankan **wajah, rambut, dan kemiripan umum** dari 'Reference Model Image'.
+
+                        ${angleAndCropPrompt}
+                        
+                        ${posePrompt}
+                        
+                        ${backgroundPrompt} 
+
+                        **7. EXCEPTIONS (JANGAN DIHAPUS):**
+                           - Jangan hapus aksesoris yang bukan pakaian utama (misalnya: kacamata, jam tangan, perhiasan, topi, hijab, alas kaki).
+                           - Untuk model yang berhijab, pastikan hijab tetap dipertahankan dan serasi dengan pakaian baru.
+
+                        **8. ETHICAL & SAFETY (CRITICAL):** Hasil akhir HARUS 100% aman untuk kerja (SFW), profesional, dan tidak sugestif. Model harus selalu berpakaian lengkap dan sopan.
+
+                        **9. REQUEST EXECUTION:** Terapkan **USER'S REQUEST** ke gambar akhir sambil mengikuti semua instruksi inti di atas dengan ketat.
+                    `;
+                    
+                    parts.unshift(
+                        { text: finalPrompt },
+                        { inlineData: { mimeType: files.model.mimeType, data: files.model.base64 } }
+                    );
+                    
+                    const payload = {
+                        contents: [{ parts: parts }],
+                        generationConfig: { responseModalities: ['IMAGE'] },
+                    };
+                    
+                    let response;
+                    let retries = 0;
+                    const maxRetries = 3;
+                    while (retries < maxRetries) {
+                        try {
+                            response = await fetch(apiUrl, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(payload)
+                            });
+                            if (response.ok) break; 
+                            else if (response.status === 429 || response.status >= 500) throw new Error(`Retryable error: ${response.status}`);
+                            else {
+                                const error = await response.json();
+                                throw new Error(`API Error: ${error.error.message || 'Unknown error'}`);
+                            }
+                        } catch (e) { 
+                            if (retries >= maxRetries - 1) throw e; 
+                            const delay = Math.pow(2, retries) * 1000 + Math.random() * 1000;
+                            await new Promise(resolve => setTimeout(resolve, delay));
+                            retries++;
+                        }
+                    }
+
+                    const result = await response.json();
+                    const candidate = result?.candidates?.[0];
+                    const base6Data = candidate?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
+
+                    if (base6Data) {
+                        currentResultBase64 = `data:image/png;base64,${base6Data}`; 
+                        ui.resultImage.src = currentResultBase64;
+                        ui.resultImage.classList.remove('hidden');
+                        ui.downloadBtn.classList.remove('hidden'); 
+                        ui.downloadBtn.disabled = false;
+                        ui.regenerateBtn.classList.remove('hidden'); 
+                        ui.editBtn.classList.remove('hidden'); 
+                    } else {
+                        const textResponse = candidate?.content?.parts?.find(p => p.text)?.text;
+                        const finishReason = candidate?.finishReason;
+
+                        let errorMessage = "Gagal membuat gambar.";
+                        if (textResponse) {
+                            errorMessage = `API Error: ${textResponse}`;
+                        } else if (finishReason) {
+                             errorMessage = `Proses AI berhenti: ${finishReason}.`;
+                             if (finishReason.includes("SAFETY") || finishReason.includes("IMAGE_OTHER") || finishReason.includes("PROHIBITED_CONTENT")) {
+                                errorMessage = "Gambar diblokir oleh filter keamanan. Ini bisa terjadi karena foto produk atau instruksi yang tidak pantas (misalnya: pakaian dalam, pakaian transparan, atau instruksi sugestif). Harap gunakan foto/instruksi yang aman.";
+                             } else if (finishReason === "NO_IMAGE") {
+                                 errorMessage = "AI tidak dapat menghasilkan gambar dari instruksi ini. Coba lagi.";
+                             }
+                        }
+                        
+                        throw new Error(errorMessage);
+                    }
+                } catch (error) {
+                    console.error("Error generating image:", error);
+                    console.error("Prompt yang gagal:", finalPrompt); 
+                    showCustomAlert(error.message || "Gagal membuat gambar. Silakan coba lagi.");
+                    ui.outputPlaceholder.classList.remove('hidden');
+                } finally {
+                    ui.loader.classList.add('hidden');
+                    ui.loader.classList.remove('flex');
+                    ui.generateBtn.disabled = false;
+                    ui.generateBtn.textContent = 'Proses dengan AI';
+                    stopLoaderAnimation(); 
+                }
+            };
+            
+            const downloadImage = () => {
+                const link = document.createElement('a');
+                link.href = ui.resultImage.src;
+                link.download = '9elevenpro-styled-outfit.png'; 
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            };
+
+            const showCustomAlert = (message) => {
+                const oldAlert = document.getElementById('custom-alert');
+                if (oldAlert) {
+                    oldAlert.remove();
+                }
+
+                const alertBox = document.createElement('div');
+                alertBox.id = 'custom-alert';
+                alertBox.style = "position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background-color: #fffbeb; border: 1px solid #fde68a; color: #b45309; padding: 1rem 1.5rem; border-radius: 0.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 9999; font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 0.75rem; font-family: 'Poppins', sans-serif;";
+                
+                alertBox.innerHTML = `
+                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
+                    <span>${message}</span>
+                `;
+                
+                document.body.appendChild(alertBox);
+
+                setTimeout(() => {
+                    alertBox.style.transition = 'opacity 0.5s ease';
+                    alertBox.style.opacity = '0';
+                    setTimeout(() => alertBox.remove(), 500);
+                }, 5000);
+            };
+
+            // --- LOGIKA EDIT CEPAT / INPAINTING BARU ---
+            
+            const handleEditProductSelect = (event) => {
+                const file = event.target.files[0];
+                if (!file || !file.type.startsWith('image/')) return;
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    editProductFile = {
+                        base64: e.target.result.split(',')[1],
+                        mimeType: file.type
+                    };
+                    ui.editProductPreview.src = e.target.result;
+                    ui.editProductPreview.classList.remove('hidden');
+                    ui.editProductRemoveBtn.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            };
+
+            const removeEditProduct = () => {
+                editProductFile = null;
+                ui.editProductUpload.value = null; 
+                ui.editProductPreview.src = '';
+                ui.editProductPreview.classList.add('hidden');
+                ui.editProductRemoveBtn.classList.add('hidden');
+            };
+
+
+            const updateCanvasTransform = () => {
+                ui.editCanvasTransformContainer.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
+                ui.zoomLevelLabel.textContent = `${Math.round(zoomLevel * 100)}%`;
+                ui.zoomInBtn.disabled = zoomLevel >= 3.0; 
+                ui.zoomOutBtn.disabled = zoomLevel <= 1.0; 
+            };
+            
+            const openEditModal = () => {
+                if (!currentResultBase64) return;
+                
+                ui.editModal.style.display = 'flex';
+                ui.editPromptInput.value = '';
+                removeEditProduct(); 
+                
+                zoomLevel = 1.0;
+                panX = 0;
+                panY = 0;
+                editMode = 'draw';
+                ui.togglePanBtn.textContent = 'Mode Gambar';
+                ui.editCanvas.classList.remove('pan-mode');
+                ui.editCanvas.classList.add('draw-mode');
+                updateCanvasTransform();
+                
+                originalEditImage = new Image();
+                originalEditImage.onload = () => {
+                    const aspectRatio = originalEditImage.naturalWidth / originalEditImage.naturalHeight;
+                    const containerWidth = ui.editCanvasContainer.clientWidth; 
+                    ui.editCanvas.width = containerWidth;
+                    ui.editCanvas.height = containerWidth / aspectRatio;
+                    
+                    editCtx.drawImage(originalEditImage, 0, 0, ui.editCanvas.width, ui.editCanvas.height);
+                };
+                originalEditImage.src = currentResultBase64;
+            };
+            
+            const closeEditModal = () => {
+                ui.editModal.style.display = 'none';
+                originalEditImage = null;
+                removeEditProduct(); 
+                editCtx.clearRect(0, 0, ui.editCanvas.width, ui.editCanvas.height);
+            };
+
+            const clearMaskDrawing = () => {
+                if (!originalEditImage) return;
+                editCtx.save();
+                editCtx.setTransform(1, 0, 0, 1, 0, 0);
+                editCtx.drawImage(originalEditImage, 0, 0, ui.editCanvas.width, ui.editCanvas.height);
+                editCtx.restore();
+            };
+
+            const getRawMousePos = (e) => {
+                if (e.touches) {
+                    return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                }
+                return { x: e.clientX, y: e.clientY };
+            }
+
+            const getMousePos = (e) => {
+                const rect = ui.editCanvas.getBoundingClientRect();
+                const scaleX = ui.editCanvas.width / rect.width;
+                const scaleY = ui.editCanvas.height / rect.height;
+                let clientX, clientY;
+                if (e.touches) {
+                    clientX = e.touches[0].clientX;
+                    clientY = e.touches[0].clientY;
+                } else {
+                    clientX = e.clientX;
+                    clientY = e.clientY;
+                }
+                return {
+                    x: (clientX - rect.left) * scaleX,
+                    y: (clientY - rect.top) * scaleY
+                };
+            };
+
+            const startEdit = (e) => {
+                e.preventDefault();
+                if (editMode === 'pan') {
+                    isPanning = true;
+                    const pos = getRawMousePos(e);
+                    lastPanX = pos.x;
+                    lastPanY = pos.y;
+                } else {
+                    isDrawing = true;
+                    const pos = getMousePos(e);
+                    editCtx.beginPath();
+                    editCtx.moveTo(pos.x, pos.y);
+                }
+            };
+
+            const doEdit = (e) => {
+                e.preventDefault();
+                if (isPanning) {
+                    const pos = getRawMousePos(e);
+                    const deltaX = pos.x - lastPanX;
+                    const deltaY = pos.y - lastPanY;
+                    lastPanX = pos.x;
+                    lastPanY = pos.y;
+                    
+                    panX += deltaX / zoomLevel; 
+                    panY += deltaY / zoomLevel;
+                    
+                    updateCanvasTransform();
+
+                } else if (isDrawing) {
+                    const pos = getMousePos(e);
+                    editCtx.lineTo(pos.x, pos.y);
+                    editCtx.strokeStyle = 'rgba(255, 0, 0, 0.6)'; // Tetap merah agar terlihat
+                    editCtx.lineWidth = currentBrushSize;
+                    editCtx.lineCap = 'round';
+                    editCtx.lineJoin = 'round';
+                    editCtx.stroke();
+                }
+            };
+
+            const stopEdit = (e) => {
+                e.preventDefault();
+                if (isPanning) {
+                    isPanning = false;
+                }
+                if (isDrawing) {
+                    editCtx.closePath();
+                    isDrawing = false;
+                }
+            };
+
+            // === PERBAIKAN v20: Logika Masker Dibalik ===
+            const createMaskFromCanvas = () => {
+                const maskCanvas = document.createElement('canvas');
+                maskCanvas.width = originalEditImage.naturalWidth;
+                maskCanvas.height = originalEditImage.naturalHeight;
+                const maskCtx = maskCanvas.getContext('2d');
+                
+                maskCtx.drawImage(originalEditImage, 0, 0, maskCanvas.width, maskCanvas.height);
+                const originalData = maskCtx.getImageData(0, 0, maskCanvas.width, maskCanvas.height).data;
+
+                maskCtx.drawImage(ui.editCanvas, 0, 0, maskCanvas.width, maskCanvas.height);
+                const editedData = maskCtx.getImageData(0, 0, maskCanvas.width, maskCanvas.height);
+                
+                const finalMask = maskCtx.createImageData(maskCanvas.width, maskCanvas.height);
+                const finalData = finalMask.data;
+
+                for (let i = 0; i < originalData.length; i += 4) {
+                    const isDifferent = originalData[i] !== editedData.data[i] || 
+                                        originalData[i+1] !== editedData.data[i+1] || 
+                                        originalData[i+2] !== editedData.data[i+2];
+                    
+                    // Logika dibalik:
+                    // Model mengharapkan area yang diedit (diarsir) menjadi HITAM
+                    // dan area yang dilindungi (tidak diarsir) menjadi PUTIH.
+                    
+                    if (isDifferent) {
+                        // Area yang di-brush (area editan) -> HITAM
+                        finalData[i] = 0;   finalData[i+1] = 0;   finalData[i+2] = 0;   finalData[i+3] = 255; 
+                    } else {
+                        // Area yang tidak di-brush (area dilindungi) -> PUTIH
+                        finalData[i] = 255; finalData[i+1] = 255; finalData[i+2] = 255; finalData[i+3] = 255; 
+                    }
+                }
+                
+                maskCtx.putImageData(finalMask, 0, 0);
+                return maskCanvas.toDataURL('image/png').split(',')[1];
+            };
+            // === AKHIR PERBAIKAN v20 ===
+
+
+            // === PERBAIKAN v20: Logika Prompt Disesuaikan ===
+            const applyInpainting = async () => {
+                const userEditPrompt = ui.editPromptInput.value;
+                
+                ui.editLoader.classList.remove('hidden');
+                ui.editLoader.classList.add('flex');
+                ui.applyEditBtn.disabled = true;
+
+                try {
+                    const originalImageBase64 = currentResultBase64.split(',')[1];
+                    const maskBase64 = createMaskFromCanvas();
+                    
+                    let finalEditPrompt = "";
+                    const parts = [];
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`;
+                    
+                    if (editProductFile) {
+                        // --- PATH A: PRODUCT INSERTION (dengan produk di modal) ---
+                        if (!userEditPrompt) {
+                            showCustomAlert("Harap masukkan instruksi untuk memandu penempatan produk (Contoh: 'pakaikan kalung ini di leher').");
+                            ui.editLoader.classList.add('hidden');
+                            ui.editLoader.classList.remove('flex');
+                            ui.applyEditBtn.disabled = false;
+                            return;
+                        }
+
+                        finalEditPrompt = `
+                            Anda adalah AI editor foto ahli untuk 9ELEVENPRO.
+                            Anda akan menerima:
+                            1.  'Original Image': Gambar latar belakang/model.
+                            2.  'Product Image': Item yang akan dimasukkan.
+                            3.  'Mask Image': Area di 'Original Image' (area HITAM) di mana 'Product Image' harus ditempatkan.
+
+                            **ATURAN SANGAT KRITIS (HARUS DIIKUTI):**
+                            1.  Ambil 'Product Image' dan letakkan di atas 'Original Image'.
+                            2.  'Product Image' **HANYA** boleh terlihat di dalam area **HITAM** pada 'Mask Image' (area yang diarsir pengguna).
+                            3.  Area **PUTIH** pada 'Mask Image' **HARUS** tetap utuh dari 'Original Image' (area yang dilindungi).
+                            4.  Padukan (blend) 'Product Image' secara mulus dan fotorealistis ke dalam area yang dimasker, sesuaikan pencahayaan, bayangan, dan perspektif agar terlihat alami.
+                            5.  Terapkan instruksi pengguna untuk memandu penempatan.
+
+                            **Instruksi Pengguna (Panduan Penempatan):** "${userEditPrompt}"
+                        `;
+                        
+                        parts.push(
+                            { text: finalEditPrompt },
+                            { inlineData: { mimeType: 'image/png', data: originalImageBase64 } },
+                            { inlineData: { mimeType: editProductFile.mimeType, data: editProductFile.base64 } },
+                            { inlineData: { mimeType: 'image/png', data: maskBase64 } }
+                        );
+
+                    } else {
+                        // --- PATH B: STANDARD INPAINTING (tanpa produk di modal) ---
+                        if (!userEditPrompt) {
+                            showCustomAlert("Harap masukkan instruksi edit.");
+                            ui.editLoader.classList.add('hidden');
+                            ui.editLoader.classList.remove('flex');
+                            ui.applyEditBtn.disabled = false;
+                            return;
+                        }
+                        
+                        finalEditPrompt = `
+                            Anda adalah AI editor foto yang presisi.
+                            Anda akan menerima Gambar Asli, Mask Image (area HITAM untuk diedit, area PUTIH untuk dilindungi), dan Instruksi Pengguna.
+
+                            **ATURAN SANGAT KRITIS (HARUS DIIKUTI):**
+                            1.  Anda **HANYA** boleh mengubah piksel di dalam area **HITAM** pada 'Mask Image' (area yang diarsir pengguna).
+                            2.  Anda **TIDAK BOLEH** mengubah, memodifikasi, atau mengganti piksel apa pun di area **PUTIH** pada 'Mask Image'. Area tersebut harus tetap identik dengan 'Gambar Asli'.
+                            3.  Terapkan instruksi pengguna secara alami *hanya* pada area yang diizinkan (area HITAM).
+
+                            **Instruksi Pengguna (terapkan HANYA di area HITAM):** "${userEditPrompt}"
+                        `;
+                        
+                        parts.push(
+                            { text: finalEditPrompt },
+                            { inlineData: { mimeType: 'image/png', data: originalImageBase64 } },
+                            { inlineData: { mimeType: 'image/png', data: maskBase64 } }
+                        );
+                    }
+                    
+                    // --- Panggilan API (Umum untuk kedua path) ---
+                    const payload = {
+                        contents: [{ parts: parts }],
+                        generationConfig: { responseModalities: ['IMAGE'] },
+                    };
+
+                    let response;
+                    let retries = 0;
+                    const maxRetries = 3;
+                    while (retries < maxRetries) {
+                        try {
+                            response = await fetch(apiUrl, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(payload)
+                            });
+                            if (response.ok) break; 
+                            else if (response.status === 429 || response.status >= 500) throw new Error(`Retryable error: ${response.status}`);
+                            else {
+                                const error = await response.json();
+                                throw new Error(`API Error: ${error.error.message || 'Unknown error'}`);
+                            }
+                        } catch (e) { 
+                            if (retries >= maxRetries - 1) throw e; 
+                            const delay = Math.pow(2, retries) * 1000 + Math.random() * 1000;
+                            await new Promise(resolve => setTimeout(resolve, delay));
+                            retries++;
+                        }
+                    }
+
+                    const result = await response.json();
+                    const candidate = result?.candidates?.[0];
+                    const base64Data = candidate?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
+                    
+                    if (base64Data) {
+                        currentResultBase64 = `data:image/png;base64,${base64Data}`; 
+                        ui.resultImage.src = currentResultBase64;
+                        closeEditModal();
+                        showCustomAlert("Edit berhasil diterapkan!");
+                    } else {
+                        const textResponse = candidate?.content?.parts?.find(p => p.text)?.text;
+                        const finishReason = candidate?.finishReason;
+
+                        let errorMessage = "Gagal menerapkan edit.";
+                        if (textResponse) {
+                            errorMessage = `API Error: ${textResponse}`;
+                        } else if (finishReason) {
+                             errorMessage = `Proses AI berhenti: ${finishReason}.`;
+                             if (finishReason.includes("SAFETY") || finishReason.includes("IMAGE_OTHER") || finishReason.includes("PROHIBITED_CONTENT")) {
+                                errorMessage = "Edit diblokir oleh filter keamanan. Harap ubah instruksi Anda ke sesuatu yang lebih aman.";
+                             }
+                        }
+                        throw new Error(errorMessage);
+                    }
+                    
+                } catch (error) {
+                    console.error("Error applying inpainting/insertion:", error);
+                    showCustomAlert(error.message || "Gagal menerapkan edit.");
+                } finally {
+                    ui.editLoader.classList.add('hidden');
+                    ui.editLoader.classList.remove('flex');
+                    ui.applyEditBtn.disabled = false;
+                }
+            };
+            // === AKHIR PERBAIKAN v20 ===
+
+
+            // Inisialisasi listener
+            Object.keys(ui.uploads).forEach(type => {
+                ui.boxes[type].addEventListener('click', (e) => {
+                    if (!files[type] || e.target.classList.contains('placeholder-text') || e.target.closest('.placeholder-text')) {
+                        ui.uploads[type].click();
+                    }
+                });
+                ui.uploads[type].addEventListener('change', (e) => handleFileSelect(e, type));
+            });
+
+            Object.keys(ui.removeBtns).forEach(type => {
+                ui.removeBtns[type].addEventListener('click', (e) => {
+                    e.stopPropagation(); 
+                    removeImage(type);
+                });
+            });
+            
+            ui.generateBtn.addEventListener('click', generateImageWithAI);
+            ui.regenerateBtn.addEventListener('click', generateImageWithAI); 
+            ui.downloadBtn.addEventListener('click', downloadImage);
+            ui.resetBtn.addEventListener('click', resetAll);
+            ui.recommendBtn.addEventListener('click', getStyleRecommendation); 
+            
+            // Listener Modal Edit
+            ui.editBtn.addEventListener('click', openEditModal);
+            ui.cancelEditBtn.addEventListener('click', closeEditModal);
+            ui.editModal.addEventListener('click', closeEditModal); 
+            ui.editModalContent.addEventListener('click', (e) => e.stopPropagation()); 
+            ui.clearMaskBtn.addEventListener('click', clearMaskDrawing);
+            ui.applyEditBtn.addEventListener('click', applyInpainting);
+            
+            ui.brushSizeSlider.addEventListener('input', (e) => {
+                currentBrushSize = parseInt(e.target.value, 10);
+                ui.brushSizeLabel.textContent = currentBrushSize;
+            });
+
+            ui.editProductBox.addEventListener('click', (e) => {
+                if (!editProductFile || e.target.classList.contains('placeholder-text') || e.target.closest('.placeholder-text')) {
+                    ui.editProductUpload.click();
+                }
+            });
+            ui.editProductUpload.addEventListener('change', handleEditProductSelect);
+            ui.editProductRemoveBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                removeEditProduct();
+            });
+
+            // Listener Zoom/Pan
+            ui.zoomInBtn.addEventListener('click', () => {
+                zoomLevel = Math.min(zoomLevel + 0.2, 3.0);
+                updateCanvasTransform();
+            });
+            ui.zoomOutBtn.addEventListener('click', () => {
+                zoomLevel = Math.max(zoomLevel - 0.2, 1.0);
+                updateCanvasTransform();
+            });
+            ui.togglePanBtn.addEventListener('click', () => {
+                if (editMode === 'draw') {
+                    editMode = 'pan';
+                    ui.togglePanBtn.textContent = 'Mode Geser';
+                    ui.editCanvas.classList.remove('draw-mode');
+                    ui.editCanvas.classList.add('pan-mode');
+                } else {
+                    editMode = 'draw';
+                    ui.togglePanBtn.textContent = 'Mode Gambar';
+                    ui.editCanvas.classList.remove('pan-mode');
+                    ui.editCanvas.classList.add('draw-mode');
+                }
+            });
+            
+            // Listener Canvas Drawing/Panning
+            ui.editCanvas.addEventListener('mousedown', startEdit);
+            ui.editCanvas.addEventListener('mousemove', doEdit);
+            ui.editCanvas.addEventListener('mouseup', stopEdit);
+            ui.editCanvas.addEventListener('mouseleave', stopEdit);
+            
+            ui.editCanvas.addEventListener('touchstart', startEdit, { passive: false });
+            ui.editCanvas.addEventListener('touchmove', doEdit, { passive: false });
+            ui.editCanvas.addEventListener('touchend', stopEdit);
+            ui.editCanvas.addEventListener('touchcancel', stopEdit);
+            
+            // PANGGIL FUNGSI INISIALISASI
+            initializeSelectionList(ui.angleListContainer, angles, 'selectedAngleId', 'angleId');
+            initializeSelectionList(ui.poseListContainer, poses, 'selectedPoseId', 'poseId');
+            checkAllFiles(); 
+        });
+    </script>
+</body>
+</html>
+
